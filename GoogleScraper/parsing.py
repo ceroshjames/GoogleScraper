@@ -667,11 +667,11 @@ class YahooParser(Parser):
         'results': {
             'de_ip': {
                 'container': '#main',
-                'result_container': '.res',
-                'link': 'div > h3 > a::attr(href)',
-                'snippet': 'div.abstr::text',
-                'title': 'div > h3 > a::text',
-                'visible_link': 'span.url::text'
+                'result_container': '.reg > li',
+                'link': '.dd div.compTitle > h3 > a::attr(href)',
+                'snippet': '.compText p::text',
+                'title': '.dd div.compTitle > h3 > a::text',
+                'visible_link': 'span.wr-bw::text'
             }
         },
     }
@@ -731,6 +731,17 @@ class YahooParser(Parser):
                         # TODO: Fix this manual protocol adding by parsing "rurl"
                         self.search_results[key][i]['link'] = 'http://' + unquote(result.group('url'))
                         break
+        if self.searchtype == 'normal':
+            for key, i in self.iter_serp_items():
+                clean_regexes = {
+                    'normal': r'/RU=(?P<url>.*?)/RK',
+                }
+                result = re.search(
+                    clean_regexes[self.searchtype],
+                    self.search_results[key][i]['link']
+                )
+                if result:
+                    self.search_results[key][i]['link'] = unquote(result.group('url'))
 
 
 class BaiduParser(Parser):
