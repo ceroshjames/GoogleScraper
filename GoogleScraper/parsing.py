@@ -659,9 +659,9 @@ class YahooParser(Parser):
     # yahooo doesn't have such a thing :D
     effective_query_selector = ['']
 
-    num_results_search_selectors = ['#pg > span:last-child']
+    num_results_search_selectors = ['.compPagination span:last-child']
 
-    page_number_selectors = ['#pg > strong::text']
+    page_number_selectors = ['.compPagination > strong::text']
 
     normal_search_selectors = {
         'results': {
