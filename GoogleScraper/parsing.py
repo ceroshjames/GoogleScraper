@@ -742,6 +742,7 @@ class YahooParser(Parser):
                 )
                 if result:
                     self.search_results[key][i]['link'] = unquote(result.group('url'))
+                self.search_results[key][i]['visible_link'] = ''
 
 
 class BaiduParser(Parser):
