@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from GoogleScraper.config import Config
 
 logger = logging.getLogger('GoogleScraper')
 
@@ -70,7 +71,8 @@ def default_scrape_jobs_for_keywords(keywords, search_engines, scrape_method, nu
     """
     for keyword in keywords:
         for search_engine in search_engines:
-            for page in range(1, num_pages + 1):
+            search_offset = Config['SCRAPING'].getint('search_offset', 1)
+            for page in range(search_offset, num_pages + 1):
                 yield {
                     'query': keyword,
                     'search_engine': search_engine,
