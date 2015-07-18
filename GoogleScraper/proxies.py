@@ -6,6 +6,7 @@ import pymysql
 import logging
 import re
 from GoogleScraper import database
+from random import shuffle
 
 Proxy = namedtuple('Proxy', 'proto, host, port, username, password')
 logger = logging.getLogger('GoogleScraper')
@@ -50,6 +51,7 @@ def parse_proxy_file(fname):
                         proxies.append(Proxy(proto=proto, host=host, port=port, username=username, password=password))
                     else:
                         proxies.append(Proxy(proto=proto, host=host, port=port, username='', password=''))
+        shuffle(proxies)
         return proxies
     else:
         raise ValueError('No such file/directory')
