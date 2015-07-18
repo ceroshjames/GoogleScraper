@@ -187,9 +187,9 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
         }
         # Patch the socket module
         # rdns is by default on true. Never use rnds=False with TOR, otherwise you are screwed!
-        socks.setdefaultproxy(pmapping.get(self.proxy.proto), self.proxy.host, int(self.proxy.port), rdns=True)
-        socks.wrap_module(socket)
-        socket.create_connection = create_connection
+        # socks.setdefaultproxy(pmapping.get(self.proxy.proto), self.proxy.host, int(self.proxy.port), rdns=True)
+        # socks.wrap_module(socket)
+        # socket.create_connection = create_connection
 
     def switch_proxy(self, proxy):
         super().switch_proxy()
@@ -266,9 +266,10 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
         try:
             super().detection_prevention_sleep()
             super().keyword_info()
-
+            proxy_string = 'http://'+self.proxy.username+':'+self.proxy.password+'@'+self.proxy.host+':'+self.proxy.port
+            proxies = {'http': proxy_string, 'https' : proxy_string}
             request = self.requests.get(self.base_search_url + urlencode(self.search_params),
-                                        headers=self.headers, timeout=timeout)
+                                        headers=self.headers, timeout=timeout, proxies=proxies)
 
             self.requested_at = datetime.datetime.utcnow()
             self.html = request.text
