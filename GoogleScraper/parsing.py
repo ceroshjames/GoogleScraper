@@ -448,7 +448,7 @@ class GoogleParser(Parser):
                             self.no_results = False
 
         clean_regexes = {
-            'normal': r'/url\?q=(?P<url>.*?)&sa=U&ei=',
+            'normal': r'/url\?(url|q)=(?P<url>[^\&]+)',
             'image': r'imgres\?imgurl=(?P<url>.*?)&'
         }
 
