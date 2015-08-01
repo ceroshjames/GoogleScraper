@@ -9,7 +9,7 @@ import logging
 import queue
 from GoogleScraper.commandline import get_command_line
 from GoogleScraper.database import ScraperSearch, SERP, Link, get_session, fixtures
-from GoogleScraper.proxies import parse_proxy_file, get_proxies_from_mysql_db, add_proxies_to_db
+from GoogleScraper.proxies import parse_proxy_file, get_proxies_from_mysql_db, add_proxies_to_db, get_proxies_string
 from GoogleScraper.caching import fix_broken_cache_names, _caching_is_one_to_one, parse_all_cached_files, \
     clean_cachefiles
 from GoogleScraper.config import InvalidConfigurationException, parse_cmd_args, Config, update_config_with_file
@@ -198,6 +198,7 @@ def main(return_results=False, parse_cmd_line=True):
     keywords = {keyword for keyword in set(Config['SCRAPING'].get('keywords', []).split('\n')) if keyword}
     proxy_file = Config['GLOBAL'].get('proxy_file', '')
     proxy_db = Config['GLOBAL'].get('mysql_proxy_db', '')
+    proxy_string = Config['GLOBAL'].get('proxy_string', '')
 
     se = Config['SCRAPING'].get('search_engines', 'google')
     if se.strip() == '*':
@@ -278,7 +279,9 @@ def main(return_results=False, parse_cmd_line=True):
 
     proxies = []
 
-    if proxy_db:
+    if proxy_string:
+        proxies = get_proxies_string(proxy_string)
+    elif proxy_db:
         proxies = get_proxies_from_mysql_db(proxy_db)
     elif proxy_file:
         proxies = parse_proxy_file(proxy_file)

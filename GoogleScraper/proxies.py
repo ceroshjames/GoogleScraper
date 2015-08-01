@@ -56,6 +56,41 @@ def parse_proxy_file(fname):
     else:
         raise ValueError('No such file/directory')
 
+def get_proxies_string(pstring):
+    """Parses a proxy file
+
+    The format should be like the following:
+
+        http 23.212.45.13:1080 username:password;http 23.212.45.13:80
+
+        If username and password aren't provided, GoogleScraper assumes
+        that the proxy doesn't need auth credentials.
+
+    Args:
+        proxy_string: The file name where to look for proxies.
+
+    Returns:
+        The parsed proxies.
+
+    Raises:
+        ValueError if no proxy found with the path fname could be found.
+    """
+    proxies = []
+    lines = pstring.split(';')
+    for line in lines:
+        tokens = line.split(' ')
+        try:
+            proto = tokens[0]
+            host, port = tokens[1].split(':')
+        except:
+            raise Exception(
+                'Invalid proxy format given. follow format: {}'.format(get_proxies_string.__doc__))
+        if len(tokens) == 3:
+            username, password = tokens[2].split(':')
+            proxies.append(Proxy(proto=proto, host=host, port=port, username=username, password=password))
+        else:
+            proxies.append(Proxy(proto=proto, host=host, port=port, username='', password=''))
+    return proxies
 
 def get_proxies(host, user, password, database, port=3306, unix_socket=None):
     """"Connect to a mysql database using pymysql and retrieve proxies for the scraping job.
