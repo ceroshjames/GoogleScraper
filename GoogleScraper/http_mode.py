@@ -266,8 +266,14 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
         try:
             super().detection_prevention_sleep()
             super().keyword_info()
-            proxy_string = 'http://'+self.proxy.username+':'+self.proxy.password+'@'+self.proxy.host+':'+self.proxy.port
-            proxies = {'http': proxy_string, 'https' : proxy_string}
+            if(self.proxy):
+                if(self.proxy.username and self.proxy.username != ''):
+                    proxy_string = 'http://'+self.proxy.username+':'+self.proxy.password+'@'+self.proxy.host+':'+self.proxy.port
+                else:
+                    proxy_string = 'http://'+self.proxy.host+':'+self.proxy.port
+                proxies = {'http': proxy_string, 'https' : proxy_string}
+            else:
+                proxies = {}
             request = self.requests.get(self.base_search_url + urlencode(self.search_params),
                                         headers=self.headers, timeout=timeout, proxies=proxies)
 
