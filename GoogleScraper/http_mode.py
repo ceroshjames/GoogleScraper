@@ -267,14 +267,22 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
             super().detection_prevention_sleep()
             super().keyword_info()
             if(self.proxy):
-                if(self.proxy.username and self.proxy.username != ''):
+                if(self.proxy.username and self.proxy.username != '' and self.proxy.host != 'proxy.crawlera.com'):
                     proxy_string = 'http://'+self.proxy.username+':'+self.proxy.password+'@'+self.proxy.host+':'+self.proxy.port
                 else:
                     proxy_string = 'http://'+self.proxy.host+':'+self.proxy.port
                 proxies = {'http': proxy_string, 'https' : proxy_string}
             else:
                 proxies = {}
-            request = self.requests.get(self.base_search_url + urlencode(self.search_params),
+            if(self.proxy.host == 'proxy.crawlera.com'):
+                if self.base_search_url.startswith("https:"):
+                    self.base_search_url = "http://" + self.base_search_url[8:]
+                    self.headers["X-Crawlera-Use-HTTPS"] = "1"
+                proxy_auth = requests.auth.HTTPProxyAuth(self.proxy.username, "")
+                request = self.requests.get(self.base_search_url + urlencode(self.search_params),
+                                        headers=self.headers, timeout=timeout, proxies=proxies, auth=proxy_auth)
+            else:
+                request = self.requests.get(self.base_search_url + urlencode(self.search_params),
                                         headers=self.headers, timeout=timeout, proxies=proxies)
 
             self.requested_at = datetime.datetime.utcnow()
