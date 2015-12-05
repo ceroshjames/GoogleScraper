@@ -7,6 +7,8 @@ import random
 import logging
 import socket
 from urllib.parse import urlencode
+import base64
+import re
 
 import GoogleScraper.socks as socks
 from GoogleScraper.scraping import SearchEngineScrape, get_base_search_url_by_search_engine
@@ -24,6 +26,23 @@ headers = {
     'Connection': 'keep-alive',
 }
 
+def get_localization_params(search_enginge):
+    #local result params
+    search_param_string = ''
+    if Config['SCRAPING'].get('location_name') and Config['SCRAPING'].get('location_id') and search_enginge == 'google':
+        location_name = Config['SCRAPING'].get('location_name')
+        tci_param = 'g:'+Config['SCRAPING'].get('location_id')
+        secret_keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        secret_keys += secret_keys.lower() + "0123456789- "
+        location_string_len = len(location_name)
+        secret_key = secret_keys[location_string_len]
+        base_encoded_location = base64.urlsafe_b64encode(location_name.encode('ascii'))
+        base_encoded_location_string = base_encoded_location.decode('utf-8').replace('=','')
+        uule = 'w+CAIQICI'+secret_key+base_encoded_location_string
+
+        #adding search params
+        search_param_string = '&glp=1&ip=0.0.0.0&noj=1&nomo=1&nota=1&igu=1&tci='+tci_param+'&uule='+uule
+    return search_param_string
 
 def get_GET_params_for_search_engine(query, search_engine, page_number=1, num_results_per_page=10,
                                      search_type='normal'):
@@ -241,10 +260,11 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
     def build_search(self):
         """Build the headers and params for the search request for the search engine."""
 
+        self.localization_params = get_localization_params(self.search_engine_name)
         self.search_params = get_GET_params_for_search_engine(self.query, self.search_engine_name,
                                                               self.page_number, self.num_results_per_page,
                                                               self.search_type)
-
+        
         self.parser = get_parser_by_search_engine(self.search_engine_name)
         self.parser = self.parser()
 
@@ -274,15 +294,17 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
                 proxies = {'http': proxy_string, 'https' : proxy_string}
             else:
                 proxies = {}
-            if(self.proxy.host == 'proxy.crawlera.com'):
+
+            search_params_generated =  urlencode(self.search_params) + self.localization_params
+            if(self.proxy and self.proxy.host == 'proxy.crawlera.com'):
                 if self.base_search_url.startswith("https:"):
                     self.base_search_url = "http://" + self.base_search_url[8:]
                     self.headers["X-Crawlera-Use-HTTPS"] = "1"
                 proxy_auth = self.requests.auth.HTTPProxyAuth(self.proxy.username, "")
-                request = self.requests.get(self.base_search_url + urlencode(self.search_params),
+                request = self.requests.get(self.base_search_url + search_params_generated,
                                         headers=self.headers, timeout=timeout, proxies=proxies, auth=proxy_auth)
             else:
-                request = self.requests.get(self.base_search_url + urlencode(self.search_params),
+                request = self.requests.get(self.base_search_url + search_params_generated,
                                         headers=self.headers, timeout=timeout, proxies=proxies)
 
             self.requested_at = datetime.datetime.utcnow()
