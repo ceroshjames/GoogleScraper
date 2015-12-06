@@ -310,7 +310,7 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
             self.requested_at = datetime.datetime.utcnow()
             self.html = request.text
             #code to print raw html
-
+            print(request.url)
             out('[HTTP - {url}, headers={headers}, params={params}'.format(
                 url=request.url,
                 headers=self.headers,
