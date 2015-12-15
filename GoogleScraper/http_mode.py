@@ -268,7 +268,7 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
         self.parser = get_parser_by_search_engine(self.search_engine_name)
         self.parser = self.parser()
 
-    def search(self, rand=False, timeout=15):
+    def search(self, rand=False, timeout=150):
         """The actual search for the search engine.
 
         When raising StopScrapingException, the scraper will stop.
