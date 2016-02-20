@@ -298,12 +298,12 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
 
             search_params_generated =  urlencode(self.search_params) + self.localization_params
             if(self.proxy and self.proxy.host == 'proxy.crawlera.com'):
-                if self.base_search_url.startswith("https:"):
-                    self.base_search_url = "http://" + self.base_search_url[8:]
-                    self.headers["X-Crawlera-Use-HTTPS"] = "1"
+                # if self.base_search_url.startswith("https:"):
+                #     self.base_search_url = "http://" + self.base_search_url[8:]
+                #     self.headers["X-Crawlera-Use-HTTPS"] = "1"
                 proxy_auth = self.requests.auth.HTTPProxyAuth(self.proxy.username, "")
                 request = self.requests.get(self.base_search_url + search_params_generated,
-                                        headers=self.headers, timeout=timeout, proxies=proxies, auth=proxy_auth)
+                                        headers=self.headers, timeout=timeout, proxies=proxies, auth=proxy_auth, verify=False)
             else:
                 request = self.requests.get(self.base_search_url + search_params_generated,
                                         headers=self.headers, timeout=timeout, proxies=proxies)
