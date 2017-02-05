@@ -31,6 +31,9 @@ def get_localization_params(search_enginge):
     search_param_string = ''
     if Config['SCRAPING'].get('location_name') and Config['SCRAPING'].get('location_id') and search_enginge == 'google':
         location_name = Config['SCRAPING'].get('location_name')
+        #check and see if location data. if not return null
+        if location_name == '':
+            return ''
         tci_param = 'g:'+Config['SCRAPING'].get('location_id')
         secret_keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         secret_keys += secret_keys.lower() + "0123456789- "
