@@ -317,6 +317,8 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
                 headers=self.headers,
                 params=self.search_params),
                 lvl=3)
+            if(Config['SCRAPING'].get('debug_request')):
+                print('Status code : {}, headers : {}, url : {}'.format(request.status_code, request.headers, request.url))
 
         except self.requests.ConnectionError as ce:
             self.status = 'Network problem occurred {}'.format(ce)
