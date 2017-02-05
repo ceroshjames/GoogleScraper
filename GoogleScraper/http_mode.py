@@ -306,7 +306,7 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
                                         headers=self.headers, timeout=timeout, proxies=proxies, auth=proxy_auth, verify=False)
             else:
                 request = self.requests.get(self.base_search_url + search_params_generated,
-                                        headers=self.headers, timeout=timeout, proxies=proxies, verify=False)
+                                        headers=self.headers, timeout=timeout, proxies=proxies)
 
             self.requested_at = datetime.datetime.utcnow()
             self.html = request.text
