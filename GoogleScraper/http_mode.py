@@ -318,6 +318,7 @@ class HttpScrape(SearchEngineScrape, threading.Timer):
                 params=self.search_params),
                 lvl=3)
             if(Config['SCRAPING'].get('debug_request')):
+                print('Request : [headers : {}, url : {}]'.format(self.headers, self.base_search_url+search_params_generated))
                 print('Status code : {}, headers : {}, url : {}'.format(request.status_code, request.headers, request.url))
 
         except self.requests.ConnectionError as ce:
